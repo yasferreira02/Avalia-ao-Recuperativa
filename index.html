@@ -1,0 +1,135 @@
+<!--
+Programa: Atividade de recuperação  logica II Data: 23/05
+Nome: Guilhermer Dias nº: 10 Turma: 3B
+Nome: João Gabriel Garcia Aguiar nº: 15
+Nome: Leonardo nº: 19
+Nome: Yasmin Ferreira nº: 30
+Nome: Julia Laurelli nº: 32
+
+Descrição: Somar todos os numeros da chamada dos participantes dividir por 5 , nosso caso deu item numero 1 , que são tecla z, movimento para à esquerda,tecla c, movimento para à direita e tecla Seta para baixo, tiro.
+
+-->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<title>Imagem</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto|Sirin+Stencil" rel="stylesheet">
+<meta charset="UTF-8">
+<link rel="icon" href="Imagens/Icon1/favicon.ico" type="image/x-icon"?v=2 />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+canvas {
+border:1px solid #d3d3d3;
+background-color: #f1f1f1;
+}
+</style>
+<script>
+var myGamePiece;
+var bullets = [];
+var keys = {}; 
+var lastShootTime = 0;
+
+function startGame() {
+    myGamePiece = new component(80, 80, "red", 10, 120, "img/aero.png");
+    myGameArea.start();
+    
+    window.addEventListener('keydown', function(e) {
+        keys[e.keyCode] = true;
+    });
+    window.addEventListener('keyup', function(e) {
+        keys[e.keyCode] = false;
+    });
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 480;
+        this.canvas.height = 270;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGameArea, 20);
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function component(width, height, color, x, y, imageSrc) {
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.image = new Image();
+    this.image.src = imageSrc;
+    this.update = function(){
+        ctx = myGameArea.context;
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+   
+    this.move = function(direction) {
+        if (direction === "left") {
+            this.x -= 5; 
+        } else if (direction === "right") {
+            this.x += 5; 
+        }
+    }
+    
+    this.shoot = function() {
+    var now = Date.now();
+    if (now - lastShootTime > 900) { 
+        bullets.push(new bullet(5, 5, "green", this.x + this.width / 2, this.y));
+        lastShootTime = now;
+        
+    }
+}
+
+}
+
+function bullet(width, height, color, x, y) {
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.update = function(){
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+function updateGameArea() {
+   
+    myGameArea.clear();
+    
+    
+    if (keys[90]) {
+        myGamePiece.move("left");
+    }
+    
+    if (keys[67]) {
+        myGamePiece.move("right");
+    }
+    
+    if (keys[40]) { 
+        myGamePiece.shoot();
+    }
+    
+    
+    for (var i = 0; i < bullets.length; i++) {
+        bullets[i].y -= 3; 
+        bullets[i].update();
+    }
+
+    
+    myGamePiece.update();
+}
+</script>
+
+</head>
+<body onload="startGame();">
+</body>
+</html>
